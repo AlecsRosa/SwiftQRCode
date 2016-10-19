@@ -136,6 +136,7 @@ public class QRCode: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     ///  - parameter view:       the scan view, the preview layer and the drawing layer will be insert into this view
     ///  - parameter completion: the completion call back
     public func prepareScan(view: UIView, completion:(stringValue: String)->()) {
+        if UIDevice.isSimulator { return }
         
         scanFrame = view.bounds
         
@@ -148,23 +149,18 @@ public class QRCode: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     
     /// start scan
     public func startScan() {
-        if session.running {
-            print("the  capture session is running")
-            
-            return
-        }
+        if UIDevice.isSimulator { return }
+        if session.running { return }
+        
         session.startRunning()
-
+        
         clearDrawLayer()
     }
     
     /// stop scan
     public func stopScan() {
-        if !session.running {
-            print("the capture session is not running")
-            
-            return
-        }
+        if !session.running { return }
+        
         session.stopRunning()
     }
 
@@ -348,4 +344,11 @@ public class QRCode: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     
     /// output
     lazy var dataOutput = AVCaptureMetadataOutput()
+}
+
+
+extension UIDevice {
+    static var isSimulator: Bool {
+        return NSProcessInfo.processInfo().environment["SIMULATOR_DEVICE_NAME"] != nil
+    }
 }
